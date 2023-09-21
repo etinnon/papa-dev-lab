@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require("body-parser")
+const { ObjectId } = require('mongodb')
 const port = (process.env.PORT || 5500)
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://emilytinnon1234:q2MqIELzh6PYuMsW@cluster0.3eaea4s.mongodb.net/?retryWrites=true&w=majority";
@@ -28,12 +29,36 @@ async function run() {
     await client.close();
   }
 }
-run().catch(console.dir);
+//run().catch(console.dir);
 
 
+async function cxnDB(){
 
+  try{
+    client.connect; 
+    const collection = client.db("emilys-db-for-papa").collection("dev-profiles");
+    // const collection = client.db("papa").collection("dev-profiles");
+    const result = await collection.find().toArray();
+    //const result = await collection.findOne(); 
+    console.log("cxnDB result: ", result);
+    return result; 
+  }
+  catch(e){
+      console.log(e)
+  }
+  finally{
+    client.close; 
+  }
+}
 
+app.get('/', async (req, res) => {
 
+  let result = await cxnDB().catch(console.error); 
+
+  // console.log("get/: ", result);
+  res.send("just a test " + result[0].name)
+ // res.render('index', {  peopleData : result })
+})
 
 let myVaraibleServer = 'soft coded server data';
 
@@ -48,15 +73,15 @@ app.post('/postClientData', function (req, res) {
   res.render('index', {'myVariableClient': req.body.userName});
 })
 
-app.get('/', function (req, res) {
-  res.send('Hello World From Express and a PaaS')
-})
+//app.get('/', function (req, res) {
+  //res.send('Hello World From Express and a PaaS')
+//})
 
 
 
-app.get('/index', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-})
+//app.get('/index', function (req, res) {
+ // res.sendFile(__dirname + '/index.html');
+//})
 
 
 //app.listen(3000)
